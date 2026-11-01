@@ -241,6 +241,37 @@
     "unitText": "HOUR"
    }
   }
+ },
+ {
+  "@context": "https://schema.org/",
+  "@type": "JobPosting",
+  "title": "Remote Support Professional",
+  "description": "<p>Support LaBase Living's members by video and live check ins from our support center in the Cedar Rapids area, and send a caregiver out when hands on help is needed. Office based, first and second shift, two openings. We train and certify you.</p><p>Needed: comfortable with a computer and video calls, clear spoken and written English, a valid driver's license, Iowa background checks, work authorization, two years of caregiving or DSP work or a high school diploma.</p>",
+  "datePosted": "2026-11-01",
+  "validThrough": "2026-12-31T23:59",
+  "employmentType": ["FULL_TIME"],
+  "hiringOrganization": {"@type": "Organization", "name": "LaBase Living", "sameAs": "https://labaseliving.com", "logo": "https://labasecareers.com/assets/logo-labase.png"},
+  "jobLocation": {"@type": "Place", "address": {"@type": "PostalAddress", "streetAddress": "4515 N River Blvd NE", "addressLocality": "Cedar Rapids", "addressRegion": "IA", "postalCode": "52411", "addressCountry": "US"}},
+  "directApply": true,
+  "identifier": {"@type": "PropertyValue", "name": "LaBase Living", "value": "RSP"},
+  "baseSalary": {"@type": "MonetaryAmount", "currency": "USD", "value": {"@type": "QuantitativeValue", "minValue": 18.50, "maxValue": 20.75, "unitText": "HOUR"}}
+ },
+ {
+  "@context": "https://schema.org/",
+  "@type": "JobPosting",
+  "title": "Host Home Provider",
+  "description": "<p>Open your home to one adult with a disability and share family life. LaBase Living matches the person to your household, trains you before anyone moves in, pays you (compensation set by the person's support needs, often tax free under federal rules), backs you up around the clock and arranges scheduled respite. Contracted role in the Cedar Rapids, Des Moines and Ankeny areas.</p><p>Needed: every adult in the household passes Iowa criminal and abuse registry checks, the home passes a LaBase safety review, LaBase host home training, a signed provider agreement. No healthcare background required.</p>",
+  "datePosted": "2026-11-01",
+  "validThrough": "2026-12-31T23:59",
+  "employmentType": ["CONTRACTOR"],
+  "hiringOrganization": {"@type": "Organization", "name": "LaBase Living", "sameAs": "https://labaseliving.com", "logo": "https://labasecareers.com/assets/logo-labase.png"},
+  "jobLocation": [
+   {"@type": "Place", "address": {"@type": "PostalAddress", "addressLocality": "Cedar Rapids", "addressRegion": "IA", "addressCountry": "US"}},
+   {"@type": "Place", "address": {"@type": "PostalAddress", "addressLocality": "Des Moines", "addressRegion": "IA", "addressCountry": "US"}},
+   {"@type": "Place", "address": {"@type": "PostalAddress", "addressLocality": "Ankeny", "addressRegion": "IA", "addressCountry": "US"}}
+  ],
+  "directApply": true,
+  "identifier": {"@type": "PropertyValue", "name": "LaBase Living", "value": "HHP"}
  }
 ]
 </script>
@@ -294,7 +325,7 @@
         <div class="role">
           <h3>Host Home Provider</h3>
           <span class="pay">Monthly compensation · contracted</span>
-          <p>One adult with a disability lives with you, family style. We train you, back you up around the clock and arrange scheduled respite. Compensation depends on the level of support and is tax free under federal rules for home providers.</p>
+          <p>Cedar Rapids, Des Moines and Ankeny areas. One adult with a disability lives with you, family style. We train you, back you up around the clock and arrange scheduled respite. Compensation depends on the level of support and is tax free under federal rules for home providers.</p>
           <ul><li>No healthcare background required</li><li>Every adult in the home passes a background check</li><li>Home passes a LaBase safety review</li></ul>
         </div>
         <div class="role">
@@ -306,7 +337,7 @@
         <div class="role">
           <h3>Remote Support Professional</h3>
           <span class="pay">$18.50 an hour days · $20.75 evenings and weekends</span>
-          <p>Support our members over video from our Cedar Rapids support center and send a caregiver out when hands on help is needed. Office based, not work from home. We train and certify you.</p>
+          <p>Two openings, first and second shift. Support our members over video from our support center in the Cedar Rapids area and send a caregiver out when hands on help is needed. Office based, not work from home. We train and certify you.</p>
           <ul><li>Comfortable with a computer and video calls</li><li>Valid driver's license</li></ul>
         </div>
         <div class="role alt">
@@ -323,16 +354,16 @@
       <div class="card">
         <div id="formwrap">
           <h2>Apply in two minutes</h2>
-          <p class="intro">Name and phone are all we need to call you. The rest helps us place you faster.</p>
+          <p class="intro">Two minutes. Every answer here saves a question on the call.</p>
           <form id="f" novalidate autocomplete="on">
             <fieldset>
               <label class="field"><span>Full name</span><input type="text" name="name" autocomplete="name" required></label>
               <div class="row">
                 <label class="field"><span>Phone <em>(we text this number)</em></span><input type="tel" name="phone" autocomplete="tel" inputmode="tel" required></label>
-                <label class="field"><span>Email <em>(optional)</em></span><input type="email" name="email" autocomplete="email" inputmode="email"></label>
+                <label class="field"><span>Email</span><input type="email" name="email" autocomplete="email" inputmode="email" required></label>
               </div>
               <div class="row">
-                <label class="field"><span>City or town you live in</span><input type="text" name="city" autocomplete="address-level2"></label>
+                <label class="field"><span>City or town you live in</span><input type="text" name="city" autocomplete="address-level2" required></label>
                 <label class="field"><span>Role you are applying for</span>
                   <select name="role" required>
                     <option value="">Choose one</option>
@@ -364,7 +395,7 @@
               <fieldset>
                 <legend>Do you have a valid driver's license?</legend>
                 <div class="pills">
-                  <label class="pill"><input type="radio" name="license" value="Yes"><span>Yes</span></label>
+                  <label class="pill"><input type="radio" name="license" value="Yes" required><span>Yes</span></label>
                   <label class="pill"><input type="radio" name="license" value="No"><span>No</span></label>
                   <label class="pill"><input type="radio" name="license" value="Permit only"><span>Permit only</span></label>
                 </div>
@@ -372,21 +403,21 @@
               <fieldset>
                 <legend>Are you authorized to work in the US?</legend>
                 <div class="pills">
-                  <label class="pill"><input type="radio" name="auth" value="Yes"><span>Yes</span></label>
+                  <label class="pill"><input type="radio" name="auth" value="Yes" required><span>Yes</span></label>
                   <label class="pill"><input type="radio" name="auth" value="No"><span>No</span></label>
                 </div>
               </fieldset>
               <fieldset>
                 <legend>Can you pass Iowa background checks, including the dependent adult and child abuse checks?</legend>
                 <div class="pills">
-                  <label class="pill"><input type="radio" name="checks" value="Yes"><span>Yes</span></label>
+                  <label class="pill"><input type="radio" name="checks" value="Yes" required><span>Yes</span></label>
                   <label class="pill"><input type="radio" name="checks" value="Not sure"><span>Not sure</span></label>
                   <label class="pill"><input type="radio" name="checks" value="No"><span>No</span></label>
                 </div>
               </fieldset>
               <div class="row">
                 <label class="field"><span>Your experience</span>
-                  <select name="exp">
+                  <select name="exp" required>
                     <option value="">Choose one</option>
                     <option>2 or more years as a DSP, caregiver, CNA or aide</option>
                     <option>Some caregiving experience, under 2 years</option>
@@ -395,7 +426,7 @@
                   </select>
                 </label>
                 <label class="field"><span>When can you start?</span>
-                  <select name="start">
+                  <select name="start" required>
                     <option value="">Choose one</option>
                     <option>Right away</option>
                     <option>Within 2 weeks</option>
@@ -488,6 +519,15 @@
     if (name.length < 2) return bad(f.name, 'Please add your name.');
     if (phone.replace(/\D/g,'').length < 10) return bad(f.phone, 'Please add a phone number we can text.');
     if (!role) return bad(f.role, 'Pick the role you want, or "not sure".');
+    var email = f.email.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return bad(f.email, 'Please add an email address.');
+    if (f.city.value.trim().length < 2) return bad(f.city, 'Please add the city or town you live in.');
+    var needsShifts = /Direct Support|Overnight|Not sure/.test(role);
+    if (needsShifts && !f.querySelector('input[name=shifts]:checked')) return bad(f.querySelector('input[name=shifts]'), 'Pick at least one time you can work.');
+    var radios = {license:'Tell us about your driver\'s license.', auth:'Tell us whether you are authorized to work in the US.', checks:'Tell us whether you can pass the Iowa background checks.'};
+    for (var k in radios) { if (!f.querySelector('input[name='+k+']:checked')) return bad(f.querySelector('input[name='+k+']'), radios[k]); }
+    if (!f.exp.value) return bad(f.exp, 'Pick the line that fits your experience.');
+    if (!f.start.value) return bad(f.start, 'Tell us when you can start.');
 
     var d = new URLSearchParams();
     d.append(E.name, name); d.append(E.phone, phone); d.append(E.email, f.email.value.trim());

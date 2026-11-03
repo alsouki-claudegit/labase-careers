@@ -502,11 +502,12 @@
            source:'entry.481921958', notes:'entry.934972207'};
   // Resume upload: a Google Apps Script web app saves the file to the hiring team's Drive and returns its link.
   // Empty endpoint = the field stays hidden and the form works exactly as before.
-  var RESUME_ENDPOINT = '';
-  // 'all' = required for every role, 'rsp-cm' = required for Remote Support and Case Manager only, 'none' = optional.
-  var RESUME_REQUIRED = 'all';
+  var RESUME_ENDPOINT = 'https://script.google.com/macros/s/AKfycby014P5lw67_6oshrM9ElcCBb0Ss1eOOM7TVQXUfJmVHt-tPziqqwxUVrpGCC6mMNUcVQ/exec';
+  // 'rsp-cm' = the field shows, and is required, only for Remote Support and Case Manager (Rawad 11-03).
+  // 'all' = shown and required for every role; 'none' = shown for every role, optional.
+  var RESUME_REQUIRED = 'rsp-cm';
   function resumeRequired(role){ return RESUME_REQUIRED === 'all' || (RESUME_REQUIRED === 'rsp-cm' && /Remote Support|Case Manager/.test(role || '')); }
-  if (RESUME_ENDPOINT) { document.getElementById('resumewrap').style.display = 'block'; }
+  function resumeShown(role){ return !!RESUME_ENDPOINT && (RESUME_REQUIRED !== 'rsp-cm' || /Remote Support|Case Manager/.test(role || '')); }
   var SRC = {fbg:'Facebook group', fbp:'Facebook post', in:'Indeed', cl:'Craigslist', li:'LinkedIn', hs:'School or Handshake',
              nd:'Nextdoor', tx:'A text or email', fr:'A friend'};
   var q = new URLSearchParams(location.search);
@@ -527,6 +528,8 @@
   function bad(el, text){ el.setAttribute('aria-invalid','true'); el.focus(); msg.className='msg err'; msg.textContent=text; }
   function clear(e){ if (e.target.getAttribute('aria-invalid')) e.target.removeAttribute('aria-invalid'); msg.className='msg'; }
   f.addEventListener('input', clear); f.addEventListener('change', clear);
+  function syncResume(){ document.getElementById('resumewrap').style.display = resumeShown(f.role.value) ? 'block' : 'none'; }
+  f.role.addEventListener('change', syncResume); syncResume();
 
   f.addEventListener('submit', function(ev){
     ev.preventDefault();
@@ -543,8 +546,8 @@
     for (var k in radios) { if (!f.querySelector('input[name='+k+']:checked')) return bad(f.querySelector('input[name='+k+']'), radios[k]); }
     if (!f.exp.value) return bad(f.exp, 'Pick the line that fits your experience.');
     if (!f.start.value) return bad(f.start, 'Tell us when you can start.');
-    var rf = RESUME_ENDPOINT ? f.resume.files[0] : null;
-    if (RESUME_ENDPOINT && !rf && resumeRequired(role)) return bad(f.resume, 'Please attach your resume or CV. A photo of it works too.');
+    var rf = resumeShown(role) ? f.resume.files[0] : null;
+    if (resumeShown(role) && !rf && resumeRequired(role)) return bad(f.resume, 'Please attach your resume or CV. A photo of it works too.');
     if (rf && rf.size > 10 * 1024 * 1024) return bad(f.resume, 'That file is over 10 MB. A PDF or a smaller photo works.');
 
     var d = new URLSearchParams();

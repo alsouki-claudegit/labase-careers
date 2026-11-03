@@ -89,6 +89,9 @@
   .submit .btn{padding:15px 26px;font-size:17px}
   .submit .btn[disabled]{opacity:.7;cursor:default}
   .fine{font-size:13px;color:var(--muted);margin:14px 0 0}
+  .resume{display:none}
+  .resume input[type=file]{width:100%;font:inherit;font-size:15px;padding:12px;border:1px dashed #CFC7B8;border-radius:8px;background:#fff}
+  .resume .hint{display:block;font-size:13px;color:var(--muted, #6b6b6b);margin-top:6px}
   .msg{display:none;margin-top:14px;padding:12px 14px;border-radius:8px;font-size:15px}
   .msg.err{display:block;background:#FBEDEA;color:var(--err)}
   .thanks,.closed{display:none;text-align:center;padding:28px 8px}
@@ -447,6 +450,11 @@
               <label class="field"><span>Anything you want us to know? <em>(optional)</em></span><textarea name="notes"></textarea></label>
             </details>
 
+            <label class="field resume" id="resumewrap"><span id="resumelabel">Your resume or CV</span>
+              <input type="file" name="resume" id="resume" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.heic,.txt,.rtf,application/pdf,image/*">
+              <span class="hint">PDF, Word, or a clear photo of it. Up to 10 MB.</span>
+            </label>
+
             <input type="hidden" name="source" id="source" value="Other">
 
             <div class="submit">
@@ -492,6 +500,13 @@
            role:'entry.1663875271', shifts:'entry.1425437325', license:'entry.1998496564', auth:'entry.806861827',
            checks:'entry.1391775072', exp:'entry.1091632786', certs:'entry.16240022', start:'entry.374367486',
            source:'entry.481921958', notes:'entry.934972207'};
+  // Resume upload: a Google Apps Script web app saves the file to the hiring team's Drive and returns its link.
+  // Empty endpoint = the field stays hidden and the form works exactly as before.
+  var RESUME_ENDPOINT = '';
+  // 'all' = required for every role, 'rsp-cm' = required for Remote Support and Case Manager only, 'none' = optional.
+  var RESUME_REQUIRED = 'all';
+  function resumeRequired(role){ return RESUME_REQUIRED === 'all' || (RESUME_REQUIRED === 'rsp-cm' && /Remote Support|Case Manager/.test(role || '')); }
+  if (RESUME_ENDPOINT) { document.getElementById('resumewrap').style.display = 'block'; }
   var SRC = {fbg:'Facebook group', fbp:'Facebook post', in:'Indeed', cl:'Craigslist', li:'LinkedIn', hs:'School or Handshake',
              nd:'Nextdoor', tx:'A text or email', fr:'A friend'};
   var q = new URLSearchParams(location.search);
@@ -528,6 +543,9 @@
     for (var k in radios) { if (!f.querySelector('input[name='+k+']:checked')) return bad(f.querySelector('input[name='+k+']'), radios[k]); }
     if (!f.exp.value) return bad(f.exp, 'Pick the line that fits your experience.');
     if (!f.start.value) return bad(f.start, 'Tell us when you can start.');
+    var rf = RESUME_ENDPOINT ? f.resume.files[0] : null;
+    if (RESUME_ENDPOINT && !rf && resumeRequired(role)) return bad(f.resume, 'Please attach your resume or CV. A photo of it works too.');
+    if (rf && rf.size > 10 * 1024 * 1024) return bad(f.resume, 'That file is over 10 MB. A PDF or a smaller photo works.');
 
     var d = new URLSearchParams();
     d.append(E.name, name); d.append(E.phone, phone); d.append(E.email, f.email.value.trim());
@@ -545,9 +563,27 @@
     go.disabled = true; go.textContent = 'Sending…';
     var done = function(){ document.getElementById('formwrap').style.display='none'; var t=document.getElementById('thanks'); t.style.display='block'; t.scrollIntoView({behavior:'smooth',block:'center'}); };
     var fail = function(){ go.disabled=false; go.textContent='Send my application'; msg.className='msg err'; msg.innerHTML='That did not go through. Please try again, or <a href="'+FALLBACK+'" target="_blank" rel="noopener">use the backup form</a>.'; };
-    try {
-      fetch(ACTION, {method:'POST', mode:'no-cors', body:d, headers:{'Content-Type':'application/x-www-form-urlencoded'}}).then(done, fail);
-    } catch (e) { fail(); }
+    var post = function(link){
+      if (link) { d.set(E.notes, (f.notes.value.trim() ? f.notes.value.trim() + ' | ' : '') + 'Resume: ' + link); }
+      try {
+        fetch(ACTION, {method:'POST', mode:'no-cors', body:d, headers:{'Content-Type':'application/x-www-form-urlencoded'}}).then(done, fail);
+      } catch (e) { fail(); }
+    };
+    if (!rf) { post(''); return; }
+    go.textContent = 'Uploading your resume…';
+    var upFail = function(){ go.disabled=false; go.textContent='Send my application'; msg.className='msg err';
+      msg.innerHTML='Your resume did not upload. Please try again, or email it to <a href="mailto:info@labaseliving.com">info@labaseliving.com</a>.'; };
+    var rd = new FileReader();
+    rd.onerror = upFail;
+    rd.onload = function(){
+      var b64 = String(rd.result).split(',')[1] || '';
+      var mime = rf.type || (/\.pdf$/i.test(rf.name) ? 'application/pdf' : /\.docx$/i.test(rf.name) ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' : /\.doc$/i.test(rf.name) ? 'application/msword' : /\.heic$/i.test(rf.name) ? 'image/heic' : '');
+      var body = JSON.stringify({name:name, phone:phone, role:role, fileName:rf.name, mimeType:mime, data:b64});
+      fetch(RESUME_ENDPOINT, {method:'POST', body:body}).then(function(r){ return r.json(); }).then(function(j){
+        if (j && j.ok && j.url) { go.textContent = 'Sending…'; post(j.url); } else { upFail(); }
+      }).catch(upFail);
+    };
+    rd.readAsDataURL(rf);
   });
 })();
 </script>

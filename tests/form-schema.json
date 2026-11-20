@@ -1,0 +1,141 @@
+{
+ "_note": "Public schema of the LaBase Google Form (viewform FB_PUBLIC_LOAD_DATA_), read 2026-11-20. engine.py check compares the live Form to the page; this copy lets the tests run with no network.",
+ "questions": {
+  "334748380": {
+   "title": "Full name",
+   "type": 0,
+   "required": true,
+   "options": []
+  },
+  "1890743753": {
+   "title": "Phone number (we text this number)",
+   "type": 0,
+   "required": true,
+   "options": []
+  },
+  "894082533": {
+   "title": "Email",
+   "type": 0,
+   "required": false,
+   "options": []
+  },
+  "1557931573": {
+   "title": "City or town you live in",
+   "type": 0,
+   "required": false,
+   "options": []
+  },
+  "1663875271": {
+   "title": "Which role are you applying for?",
+   "type": 2,
+   "required": true,
+   "options": [
+    "Direct Support Professional, full time",
+    "Direct Support Professional, part time",
+    "Overnight Residential Support Staff",
+    "Host Home Provider (contracted, in your own home)",
+    "Case Manager",
+    "Remote Support Professional (office based, works with technology)",
+    "Not sure, whichever role fits me",
+    "Administrative Assistant (Cedar Rapids office)"
+   ]
+  },
+  "1425437325": {
+   "title": "When can you work? Pick all that apply",
+   "type": 4,
+   "required": false,
+   "options": [
+    "Days (8am to 4pm)",
+    "Evenings",
+    "Overnights",
+    "Weekends",
+    "Live in (5 days on, 2 days off)"
+   ]
+  },
+  "1998496564": {
+   "title": "Do you have a valid driver's license?",
+   "type": 2,
+   "required": false,
+   "options": [
+    "Yes",
+    "No",
+    "Permit only"
+   ]
+  },
+  "806861827": {
+   "title": "Are you authorized to work in the US?",
+   "type": 2,
+   "required": false,
+   "options": [
+    "Yes",
+    "No"
+   ]
+  },
+  "1391775072": {
+   "title": "Can you pass Iowa background checks, including the dependent adult and child abuse checks?",
+   "type": 2,
+   "required": false,
+   "options": [
+    "Yes",
+    "Not sure",
+    "No"
+   ]
+  },
+  "1091632786": {
+   "title": "Your experience",
+   "type": 2,
+   "required": false,
+   "options": [
+    "2 or more years as a DSP, caregiver, CNA or aide",
+    "Some caregiving experience, under 2 years",
+    "No experience yet, I have a high school diploma or GED",
+    "No experience and no diploma yet"
+   ]
+  },
+  "16240022": {
+   "title": "Certifications you already have (we train the rest)",
+   "type": 4,
+   "required": false,
+   "options": [
+    "CNA",
+    "CPR or First Aid",
+    "Medication Manager",
+    "None yet"
+   ]
+  },
+  "374367486": {
+   "title": "When can you start?",
+   "type": 2,
+   "required": false,
+   "options": [
+    "Right away",
+    "Within 2 weeks",
+    "Within a month",
+    "Later than a month"
+   ]
+  },
+  "481921958": {
+   "title": "How did you hear about this job?",
+   "type": 3,
+   "required": false,
+   "options": [
+    "Facebook group",
+    "Facebook post",
+    "Indeed",
+    "Craigslist",
+    "LinkedIn",
+    "School or Handshake",
+    "Nextdoor",
+    "A text or email",
+    "A friend",
+    "Other"
+   ]
+  },
+  "934972207": {
+   "title": "Anything you want us to know? (optional)",
+   "type": 1,
+   "required": false,
+   "options": []
+  }
+ }
+}

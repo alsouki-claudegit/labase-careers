@@ -1,0 +1,11 @@
+{
+  "name": "labase-careers",
+  "private": true,
+  "description": "labasecareers.com. Tests load the real index.html in jsdom with a fake network.",
+  "scripts": {
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "jsdom": "^26.1.0"
+  }
+}

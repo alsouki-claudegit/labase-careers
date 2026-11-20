@@ -1,0 +1,6 @@
+# GitHub Pages builds this repo with Jekyll. Only the page, its assets, jobs.xml and status.json are served.
+exclude:
+  - tests
+  - node_modules
+  - package.json
+  - package-lock.json

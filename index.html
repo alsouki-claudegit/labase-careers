@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Careers at LaBase Living</title>
-<meta name="description" content="Direct support, overnight, host home and case management roles in Cedar Rapids and Marion, Iowa. Two minutes to apply. We call you.">
+<meta name="description" content="Direct support, overnight, host home, case management, remote support and office roles in Cedar Rapids and Marion, Iowa. Two minutes to apply. We call you.">
 <meta property="og:title" content="We're hiring at LaBase Living, Cedar Rapids">
-<meta property="og:description" content="Direct Support Professionals $16 to $17 an hour, overnight staff, Host Home Providers, a Case Manager. Company vehicle, training before your first shift. Two minutes to apply.">
+<meta property="og:description" content="Direct Support Professionals $16 to $17 an hour, overnight staff, Host Home Providers, a Case Manager, Remote Support Professionals and an Administrative Assistant. Company vehicle, training before your first shift. Two minutes to apply.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://labasecareers.com/">
 <meta property="og:image" content="https://labasecareers.com/assets/logo-labase.png">
@@ -310,10 +310,10 @@
     <div class="wrap">
       <div class="eyebrow">Careers · Cedar Rapids and Marion, Iowa</div>
       <h1>Come work with us at LaBase Living</h1>
-      <p class="lead">We run small staffed homes and host homes for adults with disabilities across the Cedar Rapids area. We are hiring Direct Support Professionals, overnight staff, Host Home Providers and a Case Manager. Two minutes to apply. We call you.</p>
+      <p class="lead">We run small staffed homes and host homes for adults with disabilities across the Cedar Rapids area. We are hiring Direct Support Professionals, overnight staff, Host Home Providers, a Case Manager, Remote Support Professionals and an Administrative Assistant. Two minutes to apply. We call you.</p>
       <div class="actions">
         <a class="btn" href="#apply">Apply in two minutes</a>
-        <span class="note">No résumé needed to start. Name and phone are enough.</span>
+        <span class="note">No résumé needed for most roles. A few quick questions, all on your phone.</span>
       </div>
       <div class="chips">
         <div class="chip"><strong>Company vehicle on the job</strong><span>No wear and tear on your own car, no mileage headaches.</span></div>
@@ -342,7 +342,7 @@
         <div class="role">
           <h3>Host Home Provider</h3>
           <span class="pay">Monthly compensation · contracted</span>
-          <p>Cedar Rapids, Des Moines and Ankeny areas. One adult with a disability lives with you, family style. We train you, back you up around the clock and arrange scheduled respite. Compensation depends on the level of support and is tax free under federal rules for home providers.</p>
+          <p>Cedar Rapids, Des Moines and Ankeny areas. One adult with a disability lives with you, family style. We train you, back you up around the clock and arrange scheduled respite. Compensation depends on the level of support and is often tax free under federal rules for home providers.</p>
           <ul><li>No healthcare background required</li><li>Every adult in the home passes a background check</li><li>Home passes a LaBase safety review</li></ul>
         </div>
         <div class="role">
@@ -488,8 +488,9 @@
         </div>
         <div class="thanks" id="thanks">
           <div class="tick">✓</div>
-          <h2>Got it, thank you</h2>
-          <p>Your application is with the LaBase Living hiring team. We text you within one business day. Questions in the meantime: (319) 777-8705.</p>
+          <h2 id="thankshead">Got it, thank you</h2>
+          <p id="thanksline">Your application is with the LaBase Living hiring team. We text you within one business day. Questions in the meantime: (319) 777-8705.</p>
+          <p id="thanksref" class="fine"></p>
           <p style="margin-top:18px"><a href="#top" class="btn small">Back to the top</a></p>
         </div>
         <div class="closed" id="closed">
@@ -512,8 +513,10 @@
 </footer>
 
 <script>
-(function(){
-  // Backend: the hiring pipeline's published Google Form. Each field posts to its entry id; no third party in between.
+// LB: every decision the page makes, kept apart from the page itself so tests/site.test.js can run it with a fake
+// network. Nothing here touches the DOM.
+var LB = (function(){
+  // The hiring pipeline's published Google Form. Each field goes to its entry id.
   var PUB = '1FAIpQLScMQwF9TzwYooN0InPcaGB950znElS5bvD7NF0ytwzlg3bX2A';
   var ACTION = 'https://docs.google.com/forms/d/e/' + PUB + '/formResponse';
   var FALLBACK = 'https://docs.google.com/forms/d/e/' + PUB + '/viewform';
@@ -521,95 +524,209 @@
            role:'entry.1663875271', shifts:'entry.1425437325', license:'entry.1998496564', auth:'entry.806861827',
            checks:'entry.1391775072', exp:'entry.1091632786', certs:'entry.16240022', start:'entry.374367486',
            source:'entry.481921958', notes:'entry.934972207'};
-  // Resume upload: a Google Apps Script web app saves the file to the hiring team's Drive and returns its link.
-  // Empty endpoint = the field stays hidden and the form works exactly as before.
-  var RESUME_ENDPOINT = 'https://script.google.com/macros/s/AKfycby014P5lw67_6oshrM9ElcCBb0Ss1eOOM7TVQXUfJmVHt-tPziqqwxUVrpGCC6mMNUcVQ/exec';
-  // 'rsp-cm' = the field shows, and is required, only for the office roles: Remote Support and Case Manager
-  // (Rawad 11-03), and Administrative Assistant (added 11-11).
-  // 'all' = shown and required for every role; 'none' = shown for every role, optional.
+  // The backend: a Google Apps Script web app (repo labase-apps-script). It saves resumes to Drive and, from its
+  // version 2, sends the application to the Form itself and says whether Google took it (audit 2026-11-20 #1: a
+  // no-cors post to the Form hides the answer, so the page used to say "thank you" even when Google refused the row).
+  var ENDPOINT = 'https://script.google.com/macros/s/AKfycby014P5lw67_6oshrM9ElcCBb0Ss1eOOM7TVQXUfJmVHt-tPziqqwxUVrpGCC6mMNUcVQ/exec';
+  // 'rsp-cm' = the resume field shows, and is required, only for the office roles: Remote Support and Case Manager
+  // (Rawad 11-03), and Administrative Assistant (added 11-11). 'all' = every role, required; 'none' = every role, optional.
   var RESUME_REQUIRED = 'rsp-cm';
   var OFFICE_ROLES = /Remote Support|Case Manager|Administrative Assistant/;
-  function resumeRequired(role){ return RESUME_REQUIRED === 'all' || (RESUME_REQUIRED === 'rsp-cm' && OFFICE_ROLES.test(role || '')); }
-  function resumeShown(role){ return !!RESUME_ENDPOINT && (RESUME_REQUIRED !== 'rsp-cm' || OFFICE_ROLES.test(role || '')); }
+  // The options of the Form's "How did you hear" dropdown, exactly. Google refuses the whole application for any other
+  // value, so a link whose label is not here goes in as Other and is named in the notes. A new channel needs the
+  // Form option first, then its label here (engine.py check compares this list with the live Form).
+  var FORM_SOURCES = ['Facebook group', 'Facebook post', 'Indeed', 'Craigslist', 'LinkedIn', 'School or Handshake',
+                      'Nextdoor', 'A text or email', 'A friend', 'Other'];
   var SRC = {fbg:'Facebook group', fbp:'Facebook post', in:'Indeed', cl:'Craigslist', li:'LinkedIn', hs:'School or Handshake',
-             nd:'Nextdoor', tx:'A text or email', fr:'A friend'};
-  var q = new URLSearchParams(location.search);
-  var s = q.get('s');
-  document.getElementById('source').value = SRC[s] || 'Other';
+             nd:'Nextdoor', tx:'A text or email', fr:'A friend', feed:'Job feed'};
+  var TIMEOUT = {status: 8000, upload: 90000, apply: 30000};   // ms; audit #10: a stalled request waited forever
 
-  // The engine's switch: status.json next to this page. Missing or unreadable means open.
-  fetch('status.json?t=' + Date.now(), {cache:'no-store'}).then(function(r){ return r.ok ? r.json() : null; }).then(function(st){
-    if (st && st.accepting === false) {
-      document.getElementById('formwrap').style.display = 'none';
-      if (st.closed_line) document.getElementById('closedline').textContent = st.closed_line;
-      document.getElementById('closed').style.display = 'block';
-      document.querySelectorAll('a[href="#apply"]').forEach(function(a){ a.style.display = 'none'; });
-    }
-  }).catch(function(){});
+  function resumeRequired(role){ return RESUME_REQUIRED === 'all' || (RESUME_REQUIRED === 'rsp-cm' && OFFICE_ROLES.test(role || '')); }
+  function resumeShown(role){ return !!ENDPOINT && (RESUME_REQUIRED !== 'rsp-cm' || OFFICE_ROLES.test(role || '')); }
 
-  var f = document.getElementById('f'), msg = document.getElementById('msg'), go = document.getElementById('go');
-  function bad(el, text){ el.setAttribute('aria-invalid','true'); el.focus(); msg.className='msg err'; msg.textContent=text; }
-  function clear(e){ if (e.target.getAttribute('aria-invalid')) e.target.removeAttribute('aria-invalid'); msg.className='msg'; }
+  function source(search){
+    var s = (new URLSearchParams(search || '').get('s') || '').replace(/[^\w-]/g, '').slice(0, 30);
+    var label = SRC[s];
+    if (label && FORM_SOURCES.indexOf(label) >= 0) return {value: label, note: ''};
+    return {value: 'Other', note: label ? 'Came from: ' + label : (s ? 'Link source: ' + s : '')};
+  }
+
+  // Missing, unreadable or slow status.json keeps the form up; the backend refuses applications while the switch is off.
+  function statusOpen(st){ return !(st && st.accepting === false); }
+
+  // One id per application, kept across retries: the backend never makes a second row or file for the same id.
+  function newAppId(){
+    var a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', s = '', r = new Uint32Array(10);
+    if (window.crypto && window.crypto.getRandomValues) window.crypto.getRandomValues(r);
+    else for (var i = 0; i < 10; i++) r[i] = Math.floor(Math.random() * 4294967296);
+    for (var k = 0; k < 10; k++) s += a[r[k] % a.length];
+    return s;
+  }
+
+  // v: plain answers. Returns null, or {field, text} for the first problem.
+  function validate(v){
+    if (v.name.length < 2) return {field:'name', text:'Please add your name.'};
+    if (v.phone.replace(/\D/g,'').length < 10) return {field:'phone', text:'Please add a phone number we can text.'};
+    if (!v.role) return {field:'role', text:'Pick the role you want, or "not sure".'};
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email)) return {field:'email', text:'Please add an email address.'};
+    if (v.city.length < 2) return {field:'city', text:'Please add the city or town you live in.'};
+    if (/Direct Support|Overnight|Not sure/.test(v.role) && !v.shifts.length) return {field:'shifts', text:'Pick at least one time you can work.'};
+    if (!v.license) return {field:'license', text:'Tell us about your driver\'s license.'};
+    if (!v.auth) return {field:'auth', text:'Tell us whether you are authorized to work in the US.'};
+    if (!v.checks) return {field:'checks', text:'Tell us whether you can pass the Iowa background checks.'};
+    if (!v.exp) return {field:'exp', text:'Pick the line that fits your experience.'};
+    if (!v.start) return {field:'start', text:'Tell us when you can start.'};
+    if (resumeShown(v.role) && !v.file && resumeRequired(v.role)) return {field:'resume', text:'Please attach your resume or CV. A photo of it works too.'};
+    if (v.file && v.file.size > 10 * 1024 * 1024) return {field:'resume', text:'That file is over 10 MB. A PDF or a smaller photo works.'};
+    return null;
+  }
+
+  // The Form fields as [key, value] pairs. The notes carry the resume link, a source the Form has no option for,
+  // and the reference that ties the row to its resume file.
+  function fields(v, appId, link, srcNote){
+    var d = [[E.name, v.name], [E.phone, v.phone], [E.email, v.email], [E.city, v.city], [E.role, v.role]];
+    ['shifts', 'certs'].forEach(function(k){
+      if (v[k].length) v[k].forEach(function(x){ d.push([E[k], x]); }); else d.push([E[k] + '_sentinel', '']);
+    });
+    ['license', 'auth', 'checks', 'exp', 'start'].forEach(function(k){ if (v[k]) d.push([E[k], v[k]]); });
+    d.push([E.source, v.source]);
+    d.push([E.notes, [v.notes, link ? 'Resume: ' + link : '', srcNote || '', 'Ref: ' + appId].filter(Boolean).join(' | ')]);
+    d.push(['fvv', '1']); d.push(['pageHistory', '0']);
+    return d;
+  }
+
+  function timed(url, opts, ms){
+    var ctl = window.AbortController ? new AbortController() : null;
+    if (ctl) opts.signal = ctl.signal;
+    return new Promise(function(resolve, reject){
+      var t = setTimeout(function(){ if (ctl) ctl.abort(); reject(new Error('timeout')); }, ms);
+      fetch(url, opts).then(function(r){ clearTimeout(t); resolve(r); }, function(e){ clearTimeout(t); reject(e); });
+    });
+  }
+
+  function backend(body, ms){
+    return timed(ENDPOINT, {method:'POST', body: JSON.stringify(body)}, ms).then(function(r){ return r.json(); });
+  }
+
+  // The deployed script before version 2 answers without v and cannot confirm. Then, and only then, post the Form
+  // the old way and tell the applicant we could not confirm it (never the confirmed thank you).
+  function legacy(pairs){
+    var d = new URLSearchParams();
+    pairs.forEach(function(p){ d.append(p[0], p[1]); });
+    return timed(ACTION, {method:'POST', mode:'no-cors', body:d, headers:{'Content-Type':'application/x-www-form-urlencoded'}}, TIMEOUT.apply)
+      .then(function(){ return {state:'unconfirmed'}; }, function(){ return {state:'failed'}; });
+  }
+
+  // Resolves {state: confirmed (with receipt) | unconfirmed | closed | failed}. Never rejects.
+  function submit(pairs, appId){
+    return backend({action:'apply', appId: appId, fields: pairs}, TIMEOUT.apply).then(function(j){
+      if (!j || typeof j !== 'object') return {state:'failed'};
+      if (j.v === undefined) return legacy(pairs);
+      if (j.ok && j.receipt) return {state:'confirmed', receipt: j.receipt};
+      if (j.error === 'closed') return {state:'closed'};
+      return {state:'failed'};
+    }).catch(function(){ return {state:'failed'}; });
+  }
+
+  // Resolves {state: ok (with url) | closed | failed}. Never rejects.
+  function upload(file, v, appId){
+    var mime = file.type || (/\.pdf$/i.test(file.name) ? 'application/pdf' : /\.txt$/i.test(file.name) ? 'text/plain' : '');
+    return backend({action:'upload', appId: appId, name: v.name, role: v.role, fileName: file.name, mimeType: mime, data: file.data},
+                   TIMEOUT.upload).then(function(j){
+      if (j && j.ok && j.url) return {state:'ok', url: j.url};
+      if (j && j.error === 'closed') return {state:'closed'};
+      return {state:'failed'};
+    }).catch(function(){ return {state:'failed'}; });
+  }
+
+  return {E:E, FALLBACK:FALLBACK, FORM_SOURCES:FORM_SOURCES, SRC:SRC, TIMEOUT:TIMEOUT, resumeShown:resumeShown,
+          source:source, statusOpen:statusOpen, newAppId:newAppId, validate:validate, fields:fields, timed:timed,
+          submit:submit, upload:upload};
+})();
+
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var src = LB.source(location.search);
+  $('source').value = src.value;
+
+  function showClosed(line){
+    $('formwrap').style.display = 'none';
+    $('thanks').style.display = 'none';
+    if (line) $('closedline').textContent = line;
+    $('closed').style.display = 'block';
+    document.querySelectorAll('a[href="#apply"]').forEach(function(a){ a.style.display = 'none'; });
+  }
+
+  // The engine's switch: status.json next to this page.
+  LB.timed('status.json?t=' + Date.now(), {cache:'no-store'}, LB.TIMEOUT.status)
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(st){ if (!LB.statusOpen(st)) showClosed(st.closed_line); })
+    .catch(function(){});
+
+  var f = $('f'), msg = $('msg'), go = $('go');
+  var el = function(k){ return /^(shifts|license|auth|checks)$/.test(k) ? f.querySelector('input[name=' + k + ']') : f.elements[k]; };
+  function bad(node, text){ node.setAttribute('aria-invalid','true'); node.focus(); msg.className='msg err'; msg.textContent=text; }
+  function clear(e){ if (e.target.getAttribute && e.target.getAttribute('aria-invalid')) e.target.removeAttribute('aria-invalid'); msg.className='msg'; msg.textContent=''; }
   f.addEventListener('input', clear); f.addEventListener('change', clear);
-  function syncResume(){ document.getElementById('resumewrap').style.display = resumeShown(f.role.value) ? 'block' : 'none'; }
-  f.role.addEventListener('change', syncResume); syncResume();
+  function syncResume(){ $('resumewrap').style.display = LB.resumeShown(f.elements.role.value) ? 'block' : 'none'; }
+  f.elements.role.addEventListener('change', syncResume); syncResume();
 
+  function values(){
+    var picked = function(k){ return [].map.call(f.querySelectorAll('input[name=' + k + ']:checked'), function(c){ return c.value; }); };
+    var one = function(k){ var c = f.querySelector('input[name=' + k + ']:checked'); return c ? c.value : ''; };
+    var role = f.elements.role.value;
+    return {name: f.elements.name.value.trim(), phone: f.elements.phone.value.trim(), email: f.elements.email.value.trim(),
+            city: f.elements.city.value.trim(), role: role, shifts: picked('shifts'), certs: picked('certs'),
+            license: one('license'), auth: one('auth'), checks: one('checks'), exp: f.elements.exp.value,
+            start: f.elements.start.value, source: f.elements.source.value, notes: f.elements.notes.value.trim(),
+            file: LB.resumeShown(role) ? (f.elements.resume.files[0] || null) : null};
+  }
+
+  var CALL = '<a href="tel:+13197778705">(319) 777-8705</a>';
+  function again(html){ go.disabled = false; go.textContent = 'Send my application'; msg.className = 'msg err'; msg.innerHTML = html; }
+  function thanks(receipt){
+    $('formwrap').style.display = 'none';
+    if (receipt) {
+      $('thanksref').textContent = 'Your reference: ' + receipt;
+    } else {
+      $('thankshead').textContent = 'Thank you, it is sent';
+      $('thanksline').innerHTML = 'We could not confirm it on our side. If we have not texted you within one business day, call or text ' + CALL + ' so nothing gets missed.';
+    }
+    var t = $('thanks'); t.style.display = 'block'; t.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  var appId = null;
   f.addEventListener('submit', function(ev){
     ev.preventDefault();
-    var name = f.name.value.trim(), phone = f.phone.value.trim(), role = f.role.value;
-    if (name.length < 2) return bad(f.name, 'Please add your name.');
-    if (phone.replace(/\D/g,'').length < 10) return bad(f.phone, 'Please add a phone number we can text.');
-    if (!role) return bad(f.role, 'Pick the role you want, or "not sure".');
-    var email = f.email.value.trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return bad(f.email, 'Please add an email address.');
-    if (f.city.value.trim().length < 2) return bad(f.city, 'Please add the city or town you live in.');
-    var needsShifts = /Direct Support|Overnight|Not sure/.test(role);
-    if (needsShifts && !f.querySelector('input[name=shifts]:checked')) return bad(f.querySelector('input[name=shifts]'), 'Pick at least one time you can work.');
-    var radios = {license:'Tell us about your driver\'s license.', auth:'Tell us whether you are authorized to work in the US.', checks:'Tell us whether you can pass the Iowa background checks.'};
-    for (var k in radios) { if (!f.querySelector('input[name='+k+']:checked')) return bad(f.querySelector('input[name='+k+']'), radios[k]); }
-    if (!f.exp.value) return bad(f.exp, 'Pick the line that fits your experience.');
-    if (!f.start.value) return bad(f.start, 'Tell us when you can start.');
-    var rf = resumeShown(role) ? f.resume.files[0] : null;
-    if (resumeShown(role) && !rf && resumeRequired(role)) return bad(f.resume, 'Please attach your resume or CV. A photo of it works too.');
-    if (rf && rf.size > 10 * 1024 * 1024) return bad(f.resume, 'That file is over 10 MB. A PDF or a smaller photo works.');
-
-    var d = new URLSearchParams();
-    d.append(E.name, name); d.append(E.phone, phone); d.append(E.email, f.email.value.trim());
-    d.append(E.city, f.city.value.trim()); d.append(E.role, role);
-    ['shifts','certs'].forEach(function(k){
-      var any=false; f.querySelectorAll('input[name='+k+']:checked').forEach(function(c){ d.append(E[k], c.value); any=true; });
-      if (!any) d.append(E[k] + '_sentinel', '');
-    });
-    ['license','auth','checks'].forEach(function(k){ var c=f.querySelector('input[name='+k+']:checked'); if (c) d.append(E[k], c.value); });
-    if (f.exp.value) d.append(E.exp, f.exp.value);
-    if (f.start.value) d.append(E.start, f.start.value);
-    d.append(E.source, f.source.value); d.append(E.notes, f.notes.value.trim());
-    d.append('fvv','1'); d.append('pageHistory','0');
-
+    if (go.disabled) return;
+    var v = values(), problem = LB.validate(v);
+    if (problem) return bad(el(problem.field), problem.text);
+    appId = appId || LB.newAppId();
     go.disabled = true; go.textContent = 'Sending…';
-    var done = function(){ document.getElementById('formwrap').style.display='none'; var t=document.getElementById('thanks'); t.style.display='block'; t.scrollIntoView({behavior:'smooth',block:'center'}); };
-    var fail = function(){ go.disabled=false; go.textContent='Send my application'; msg.className='msg err'; msg.innerHTML='That did not go through. Please try again, or <a href="'+FALLBACK+'" target="_blank" rel="noopener">use the backup form</a>.'; };
-    var post = function(link){
-      if (link) { d.set(E.notes, (f.notes.value.trim() ? f.notes.value.trim() + ' | ' : '') + 'Resume: ' + link); }
-      try {
-        fetch(ACTION, {method:'POST', mode:'no-cors', body:d, headers:{'Content-Type':'application/x-www-form-urlencoded'}}).then(done, fail);
-      } catch (e) { fail(); }
+    var send = function(link){
+      LB.submit(LB.fields(v, appId, link, src.note), appId).then(function(res){
+        if (res.state === 'confirmed') return thanks(res.receipt);
+        if (res.state === 'unconfirmed') return thanks(null);
+        if (res.state === 'closed') return showClosed();
+        again('That did not go through, and your answers are still here. Press Send again, call or text ' + CALL
+              + ', or <a href="' + LB.FALLBACK + '" target="_blank" rel="noopener">use the backup form</a>.');
+      });
     };
-    if (!rf) { post(''); return; }
+    if (!v.file) return send('');
     go.textContent = 'Uploading your resume…';
-    var upFail = function(){ go.disabled=false; go.textContent='Send my application'; msg.className='msg err';
-      msg.innerHTML='Your resume did not upload. Please try again, or email it to <a href="mailto:info@labaseliving.com">info@labaseliving.com</a>.'; };
+    var upFail = function(){ again('Your resume did not upload, and your answers are still here. Please try again, or email it to '
+                                   + '<a href="mailto:info@labaseliving.com">info@labaseliving.com</a>.'); };
     var rd = new FileReader();
     rd.onerror = upFail;
     rd.onload = function(){
-      var b64 = String(rd.result).split(',')[1] || '';
-      var mime = rf.type || (/\.pdf$/i.test(rf.name) ? 'application/pdf' : /\.docx$/i.test(rf.name) ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' : /\.doc$/i.test(rf.name) ? 'application/msword' : /\.heic$/i.test(rf.name) ? 'image/heic' : '');
-      var body = JSON.stringify({name:name, phone:phone, role:role, fileName:rf.name, mimeType:mime, data:b64});
-      fetch(RESUME_ENDPOINT, {method:'POST', body:body}).then(function(r){ return r.json(); }).then(function(j){
-        if (j && j.ok && j.url) { go.textContent = 'Sending…'; post(j.url); } else { upFail(); }
-      }).catch(upFail);
+      var file = {name: v.file.name, type: v.file.type, data: String(rd.result).split(',')[1] || ''};
+      LB.upload(file, v, appId).then(function(u){
+        if (u.state === 'ok') { go.textContent = 'Sending…'; return send(u.url); }
+        if (u.state === 'closed') return showClosed();
+        upFail();
+      });
     };
-    rd.readAsDataURL(rf);
+    rd.readAsDataURL(v.file);
   });
 })();
 </script>

@@ -124,6 +124,22 @@ test('#1 a rejected application shows the fallback, keeps every answer and lets 
   assert.equal(formPosts(p).length, 0);
 });
 
+// Re-audit 2026-11-20 #4: the v2 backend says why a submit was not confirmed. No reason may reach the thank you.
+test('#1 a v2 answer that Google did not confirm (any reason) shows Send again, never the thank you', async () => {
+  for (const reason of ['form_closed', 'signin', 'form_reshown', 'not_recorded', 'redirect']) {
+    const p = page({backend: () => ({ok: false, error: 'rejected', reason, code: 200, v: 2})});
+    fill(p); submit(p);
+    assert.ok(await until(() => p.$('msg').textContent), reason);
+    assert.equal(p.shown('thanks'), false, reason);
+    assert.equal(p.shown('closed'), false, reason + ': a closed Google Form is not the paused panel');
+    assert.match(p.$('msg').textContent, /did not go through/, reason);
+    assert.match(p.$('msg').textContent, /Send again/, reason);
+    assert.ok(keptTyping(p), reason);
+    assert.equal(p.$('go').disabled, false, reason);
+    assert.equal(formPosts(p).length, 0, reason);
+  }
+});
+
 test('#1 a network error or a non JSON answer is a failure, never a blind post', async () => {
   for (const answer of ['throw', 'html']) {
     const p = page({backend: () => answer});

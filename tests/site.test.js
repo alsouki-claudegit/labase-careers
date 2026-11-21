@@ -244,6 +244,7 @@ test('#13 every ?s= link used in jobs.xml is attributed, and only Form options a
     assert.ok(options.includes(s.source), `${k} sent "${s.source}", not a Form option: Google would reject the row`);
     assert.ok(s.source !== 'Other' || /Came from: Job feed/.test(s.notes), `${k} recorded as Other with no trace`);
   }
+  assert.equal((await sentSource('?s=feed')).source, 'Job feed');  // the Form option since 2026-11-21 (C44)
   assert.equal((await sentSource('?s=fbg')).source, 'Facebook group');
   const odd = await sentSource('?s=tiktok');
   assert.equal(odd.source, 'Other');

@@ -304,3 +304,13 @@ test('#21 host home pay is "often tax free" everywhere it is mentioned', () => {
   assert.ok(all.length >= 2);
   assert.deepEqual([...new Set(all)], ['often']);
 });
+
+// Rawad 11-16: nothing we send an applicant promises timing. The page said "we text you within one business day"
+// while 129 applicants waited on calls (found 2026-11-24, C47). Covers the page, its scripts and the job feed.
+test('no applicant-facing text promises a time to hear back', () => {
+  const promise = /business day|within \d+ (hour|day)|24 hours|\bsoon\b|\btomorrow\b|\btoday\b/i;
+  for (const [name, text] of [['index.html', HTML], ['jobs.xml', JOBS]]) {
+    const hit = text.match(promise);
+    assert.equal(hit, null, name + ' promises timing: "' + (hit && hit[0]) + '"');
+  }
+});
